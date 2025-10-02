@@ -42,7 +42,15 @@ FORWARD_MESSAGES = [
     "Messaggio inoltrato",  # Italian
     "Vidarebefordrat meddelande",  # Swedish
     "Videresendt [mM]elding",  # Norwegian
+    "Videresendt e-post",  # Norwegian
     "Videresendt [bB]esked",  # Danish
+    "Videresendt e-mail",  # Danish
+    "Vidarebefordrad e-post",  # Swedish
+    "Doorgestuurde e-mail",  # Dutch
+    "E-mail transféré",  # French
+    "Courriel transféré",  # French
+    "E-mail inoltrata",  # Italian
+    "Weitergeleitete E-Mail",  # German
     "Mensaje reenviado",  # Spanish
     # outlook
     "Original [mM]essage",
