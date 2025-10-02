@@ -4,9 +4,17 @@ REPLY_PATTERNS = [
     "^On (.*) wrote:$",  # apple mail/gmail reply
     "^Am (.*) schrieb (.*):$",  # German
     "^Le (.*) a écrit :$",  # French
+    "^Le (.*), (.*) a écrit :$",  # French alternative
     "El (.*) escribió:$",  # Spanish
     r"^(.*) написал\(а\):$",  # Russian
-    "^Den (.*) skrev (.*):$",  # Swedish
+    "^Den (.*) skrev (.*):$",  # Swedish/Danish/Norwegian
+    "^Den (.*) skrev (.*) följande:$",  # Swedish
+    "^Den (.*) skrev (.*) følgende:$",  # Norwegian/Danish
+    "^(.*) skrev den (.*):$",  # Norwegian alternative
+    "^(.*) schreef op (.*):$",  # Dutch
+    "^Op (.*) schreef (.*):$",  # Dutch alternative
+    "^Il giorno (.*) (.*) ha scritto:$",  # Italian
+    "^Il (.*), (.*) ha scritto:$",  # Italian alternative
     "^Em (.*) escreveu:$",  # Brazillian portuguese
     "([0-9]{4}/[0-9]{1,2}/[0-9]{1,2}) (.* <.*@.*>)$",  # gmail (?) reply
 ]
@@ -18,19 +26,34 @@ REPLY_DATE_SPLIT_REGEX = re.compile(
 FORWARD_MESSAGES = [
     # apple mail forward
     "Begin forwarded message",
-    "Anfang der weitergeleiteten E-Mail",
-    "Début du message réexpédié",
-    "Inicio del mensaje reenviado",
+    "Anfang der weitergeleiteten E-Mail",  # German
+    "Début du message réexpédié",  # French
+    "Doorgestuurd bericht volgt",  # Dutch
+    "Inizio messaggio inoltrato",  # Italian
+    "Vidarebefordrat meddelande börjar",  # Swedish
+    "Videresendt melding",  # Norwegian
+    "Videresendt besked",  # Danish
+    "Inicio del mensaje reenviado",  # Spanish
     # gmail/evolution forward
     "Forwarded [mM]essage",
-    "Mensaje reenviado",
-    "Vidarebefordrat meddelande",
+    "Weitergeleitete Nachricht",  # German
+    "Message transféré",  # French
+    "Doorgestuurd bericht",  # Dutch
+    "Messaggio inoltrato",  # Italian
+    "Vidarebefordrat meddelande",  # Swedish
+    "Videresendt [mM]elding",  # Norwegian
+    "Videresendt [bB]esked",  # Danish
+    "Mensaje reenviado",  # Spanish
     # outlook
     "Original [mM]essage",
-    "Ursprüngliche Nachricht",
-    "Mensaje [oO]riginal",
-    # Thunderbird forward
-    "Message transféré",
+    "Ursprüngliche Nachricht",  # German
+    "Message [dD]'origine",  # French
+    "Oorspronkelijk [bB]ericht",  # Dutch
+    "Messaggio [oO]riginale",  # Italian
+    "Ursprungligt meddelande",  # Swedish
+    "Opprinnelig melding",  # Norwegian
+    "Oprindelig besked",  # Danish
+    "Mensaje [oO]riginal",  # Spanish
     # mail.ru forward (Russian)
     "Пересылаемое сообщение",
 ]
@@ -64,43 +87,67 @@ HEADER_RE = re.compile(r"\*?([-\w ]+):\*?(.*)$", re.UNICODE)
 
 HEADER_MAP = {
     "from": "from",
-    "von": "from",
-    "de": "from",
-    "от кого": "from",
-    "från": "from",
+    "von": "from",  # German
+    "de": "from",  # French/Spanish
+    "van": "from",  # Dutch
+    "da": "from",  # Italian
+    "från": "from",  # Swedish
+    "fra": "from",  # Norwegian/Danish
+    "от кого": "from",  # Russian
     "to": "to",
-    "an": "to",
-    "para": "to",
-    "à": "to",
-    "pour": "to",
-    "кому": "to",
-    "till": "to",
+    "an": "to",  # German
+    "para": "to",  # Spanish
+    "à": "to",  # French
+    "pour": "to",  # French
+    "aan": "to",  # Dutch
+    "a": "to",  # Italian
+    "til": "to",  # Norwegian/Danish/Swedish
+    "till": "to",  # Swedish
+    "кому": "to",  # Russian
     "cc": "cc",
-    "kopie": "cc",
-    "kopia": "cc",
+    "kopie": "cc",  # German
+    "kopia": "cc",  # Swedish
+    "kopi": "cc",  # Norwegian/Danish
     "bcc": "bcc",
-    "cco": "bcc",
-    "blindkopie": "bcc",
+    "cco": "bcc",  # Spanish/Italian
+    "cci": "bcc",  # French
+    "blindkopie": "bcc",  # German
+    "dold kopia": "bcc",  # Swedish
+    "blindkopi": "bcc",  # Norwegian/Danish
     "reply-to": "reply-to",
-    "antwort an": "reply-to",
-    "répondre à": "reply-to",
-    "responder a": "reply-to",
+    "antwort an": "reply-to",  # German
+    "antwoord aan": "reply-to",  # Dutch
+    "répondre à": "reply-to",  # French
+    "rispondi a": "reply-to",  # Italian
+    "svara till": "reply-to",  # Swedish
+    "svar til": "reply-to",  # Norwegian/Danish
+    "responder a": "reply-to",  # Spanish
     "date": "date",
     "sent": "date",
     "received": "date",
-    "datum": "date",
-    "gesendet": "date",
-    "enviado el": "date",
-    "enviados": "date",
-    "fecha": "date",
-    "дата": "date",
+    "datum": "date",  # German/Dutch/Swedish
+    "dato": "date",  # Norwegian/Danish
+    "gesendet": "date",  # German
+    "verzonden": "date",  # Dutch
+    "data": "data",  # Italian
+    "envoyé": "date",  # French
+    "envoyé le": "date",  # French
+    "sendt": "date",  # Norwegian/Danish
+    "skickat": "date",  # Swedish
+    "enviado el": "date",  # Spanish
+    "enviados": "date",  # Spanish
+    "fecha": "date",  # Spanish
+    "дата": "date",  # Russian
     "subject": "subject",
-    "betreff": "subject",
-    "asunto": "subject",
-    "objet": "subject",
-    "sujet": "subject",
-    "тема": "subject",
-    "ämne": "subject",
+    "betreff": "subject",  # German
+    "onderwerp": "subject",  # Dutch
+    "oggetto": "subject",  # Italian
+    "objet": "subject",  # French
+    "sujet": "subject",  # French
+    "ämne": "subject",  # Swedish
+    "emne": "subject",  # Norwegian/Danish
+    "asunto": "subject",  # Spanish
+    "тема": "subject",  # Russian
 }
 
 COMPILED_PATTERN_MAP = {
