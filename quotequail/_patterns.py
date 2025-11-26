@@ -91,7 +91,6 @@ FORWARD_STYLES = [
     ),
 ]
 
-HEADER_RE = re.compile(r"\*?([-\w ]+):\*?(.*)$", re.UNICODE)
 
 HEADER_MAP = {
     "from": "from",
@@ -157,6 +156,13 @@ HEADER_MAP = {
     "asunto": "subject",  # Spanish
     "тема": "subject",  # Russian
 }
+
+HEADER_KEYS = list(HEADER_MAP.keys())
+HEADER_OR = "|".join(re.escape(k) for k in HEADER_KEYS)
+HEADER_RE = re.compile(
+    rf"^\s*\*?({HEADER_OR})\s*:\*?(.*)$",
+    flags=re.IGNORECASE | re.UNICODE,
+)
 
 COMPILED_PATTERN_MAP = {
     "reply": [re.compile(regex) for regex in REPLY_PATTERNS],
