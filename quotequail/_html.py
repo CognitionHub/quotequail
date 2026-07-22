@@ -32,6 +32,14 @@ INLINE_TAGS = [
     "th",
 ]
 
+# Tags that are replaced by binary data, so should be preserved in the HTML no
+# matter the text around them.
+REPLACED_TAGS = ["img"]
+
+
+def is_replaced(el: Element) -> bool:
+    return isinstance(el.tag, str) and el.tag.lower() in REPLACED_TAGS
+
 
 def trim_tree_after(element: Element, include_element: bool = True):
     """
@@ -181,8 +189,16 @@ def slice_tree(
     else:
         new_tree = tree
 
-    include_start = start_ref[1] is Position.Begin if start_ref else False
-    include_end = end_ref[1] is Position.End if end_ref else False
+    include_start = (
+        (start_ref[1] is Position.Begin or is_replaced(start_ref[0]))
+        if start_ref
+        else False
+    )
+    include_end = (
+        (end_ref[1] is Position.End or is_replaced(end_ref[0]))
+        if end_ref
+        else False
+    )
 
     # If start_ref is the same as end_ref, and we don't include the element,
     # we are removing the entire tree. We need to handle this separately,
@@ -385,11 +401,16 @@ def tree_line_generator(
                 and (style := el.attrib.get("style"))
                 and any(style_re.match(style) for style_re in FORWARD_STYLES)
             )
+            # Replaced elements (e.g. images) carry no text but must still be
+            # tracked as their own line so they are not silently trimmed away
+            # when the tree is sliced. We emit that line on the closing tag so
+            # start_ref points at the element's Begin position.
+            is_replaced_end = is_replaced(el) and state is Position.End
 
             if is_block or line_break:
                 line = _trim_spaces(line)
 
-                if line or line_break or is_forward:
+                if line or line_break or is_forward or is_replaced_end:
                     end_ref = (el, state)
                     yield start_ref, end_ref, start_indentation_level, line
                     counter += 1

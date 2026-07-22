@@ -116,3 +116,26 @@ def test_mailru_forward(read_file):
     assert "html_top" not in result
     assert result["html"] == read_file("mailru_forward_unwrapped.html")
     assert "html_bottom" not in result
+
+
+def test_reply_with_image():
+    html = 'Test 2.<br><br>On Jun 05, 2018, at 09:56 AM, John Doe &lt;john@example.com&gt; wrote:<br><blockquote><img src="https://example.com" class="fr-fic fr-dib"><br>Some text 1.<br><br>Bart</blockquote>'
+    assert unwrap_html(html) == {
+        "type": "reply",
+        "date": "Jun 05, 2018, at 09:56 AM",
+        "from": "John Doe <john@example.com>",
+        "html_top": "Test 2.<br>",
+        "html": '<div><img src="https://example.com" class="fr-fic fr-dib"><br>Some text 1.<br><br>Bart</div>',
+    }
+
+
+def test_reply_with_wrapped_images():
+    images = '<div class="elementToProof"><img style="max-width: 1248px;" size="5500089" data-outlook-trace="F:1|T:1" src="https://api.trymimir.com/files/45b4b770-2548-49df-9594-34abefb80552"><img id="image_0" style="max-width: 1248px;" size="5921467" data-outlook-trace="F:1|T:1" src="https://api.trymimir.com/files/5212a591-1cd4-453c-8a33-fcdbb76f40fa"></div>'
+    html = f"Test 2.<br><br>On Jun 05, 2018, at 09:56 AM, John Doe &lt;john@example.com&gt; wrote:<br><blockquote>{images}Some text 1.<br><br>Bart</blockquote>"
+    assert unwrap_html(html) == {
+        "type": "reply",
+        "date": "Jun 05, 2018, at 09:56 AM",
+        "from": "John Doe <john@example.com>",
+        "html_top": "Test 2.<br>",
+        "html": f"<div>{images}Some text 1.<br><br>Bart</div>",
+    }
